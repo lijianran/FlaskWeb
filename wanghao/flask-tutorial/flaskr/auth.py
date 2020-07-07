@@ -57,11 +57,12 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('lijing.board'))
+           # return render_template('auth/register.html')
 
         flash(error)
 
-    return render_template('auth/index.html')
+    return redirect(url_for('lijing.index'))
 
 @bp.before_app_request
 def load_logged_in_user():

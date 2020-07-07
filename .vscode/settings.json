@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
     "python.pythonPath": "lijianran\\flask-tutorial\\venv\\Scripts\\python.exe"
+=======
+    "python.pythonPath": "wanghao\\flask-tutorial\\venv\\Scripts\\python.exe"
+>>>>>>> dev
 }
