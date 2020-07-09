@@ -1,0 +1,77 @@
+{% extends 'base_lijing.html' %}
+
+{% block title %}basic{% endblock %}
+
+{% block siderbar %}
+<div class="sidebar-sticky pt-3">
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link " href="{{ url_for('lijing.board') }}">
+        <span data-feather="home"></span>
+        主页 <span class="sr-only">(current)</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="file"></span>
+        模块一
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="shopping-cart"></span>
+        模块二
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-toggle="collapse" data-target="#demo">
+        <span data-feather="users"></span>
+        教师管理
+      </a>
+      <div class="collapse  show" id="demo">
+        <ul class="nav flex-column mb-2">
+          <li class="nav-item">
+            <a class="nav-link active" href="{{url_for('lijing_basicinfo.hello') }}">
+              &nbsp;&nbsp;<span data-feather="file-text"></span>
+              教师基本信息
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              &nbsp;&nbsp;<span data-feather="file-text"></span>
+              教师业务档案
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              &nbsp;&nbsp;<span data-feather="file-text"></span>
+              教师荣誉档案
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              &nbsp;&nbsp;<span data-feather="file-text"></span>
+              数据检索
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="bar-chart-2"></span>
+        模块四
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <span data-feather="layers"></span>
+        模块五
+      </a>
+    </li>
+  </ul>
+
+
+</div>
+
+{% endblock %}

@@ -43,6 +43,9 @@ def create_app(test_config=None):
    
     from .lijing import lijing_index
     app.register_blueprint(lijing_index.bp)
+
+    from .lijing import lijing_basicinfo
+    app.register_blueprint(lijing_basicinfo.bp)
     #主界面
     app.add_url_rule('/', endpoint='lijing.index')
 
