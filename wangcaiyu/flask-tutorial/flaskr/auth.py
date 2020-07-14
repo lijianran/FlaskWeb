@@ -36,7 +36,7 @@ def register():
 
         flash(error)
 
-    return render_template('auth/register.html')
+    return render_template('lijing/register.html')
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
@@ -57,7 +57,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('auth.login()'))
+            return redirect(url_for('lijing.board'))
 
         flash(error)
 
