@@ -14,7 +14,7 @@ from flaskr.db import get_db, get_lijing_db
 # import os
 # import xlrd
 # import xlsxwriter
-# import json
+import json
 import datetime
 # from pypinyin import lazy_pinyin
 
@@ -77,4 +77,38 @@ def jsondata():
 
 @bp.route('/importData', methods=('GET', 'POST'))
 def importData():
-  return redirect(url_for('lijing_basicinfo.hello'))
+    if request.method == 'POST':
+        db = get_lijing_db()
+
+
+
+        year_select = request.form.get('year_select')
+
+        sql_data = {}
+        with open('flaskr\sql_lijing.json', 'r') as f:
+            sql_data = json.load(f)
+
+        sql_create = ['', '', '', '']
+        sql_create[0] = 'CREATE TABLE person_' + \
+            year_select+sql_data['person']
+        sql_create[1] = 'CREATE TABLE education_' + \
+            year_select+sql_data['education']
+        sql_create[2] = 'CREATE TABLE skill_' + \
+            year_select+sql_data['skill']
+        sql_create[3] = 'CREATE TABLE workinfo_' + \
+            year_select+sql_data['workinfo']
+
+        year_data = db.execute('select year from year_list').fetchall()
+        year_list = []
+        # year_new = datetime.datetime.now().year
+        for year in year_data:
+            year_list.insert(0, year['year'])
+
+        if year_select not in year_list:
+            db.execute('insert into year_list (year, basicinfo, workinfo, honorinfo) values (?,?,?,?)',
+                       (year_select, 0, 0, 0, ))
+            for sql in sql_create:
+                db.execute(sql)
+            db.commit()
+
+        return redirect(url_for('lijing_basicinfo.hello'))

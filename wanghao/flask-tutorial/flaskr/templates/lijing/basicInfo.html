@@ -147,6 +147,7 @@
           <div class="alert alert-primary" role="alert">
             请选择要导入的年份和Excel表格(.xlsx)
           </div>
+
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <label class="input-group-text" for="inputGroupSelect01">年份</label>
@@ -160,6 +161,7 @@
               <option value="{{ year_new }}">{{ year_new }} （新增）</option>
             </select>
           </div>
+
           <div class="input-group">
             <div class="custom-file">
               <input onchange="showFilename(this.files[0])" type="file" class="custom-file-input" id="inputGroupFile04"
@@ -322,6 +324,12 @@
   function show_import_modal() {
     $('#importModal').modal('show');
   };
+
+
+  
+  function showFilename(file) {
+        $("#filename_label").html(file.name);
+    };
 
  
   
