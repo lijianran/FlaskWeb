@@ -31,12 +31,12 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 
 
-@click.command('init-db')
+@click.command('init-db')   #定义一个inti-db的命令行，就可以直接使用命令行，不用flask run
 @with_appcontext
-def init_db_command():
+def init_db_command():    
     """Clear the existing data and create new tables."""
     init_db()
-    click.echo('Initialized the database.')
+    click.echo('初始化了数据库.')    #输出一个初始化成功
 
 
 
