@@ -60,11 +60,11 @@ def login():
             session.clear()
             session['user_id'] = user['id']
 
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('lijing.board'))
 
         flash(error)
 
-    return render_template('auth/login.html')
+    return render_template('lijing/login.html')
 
 
 @bp.before_app_request
