@@ -17,4 +17,4 @@ def index():
 @bp.route('/board')
 @login_required
 def board():
-    return render_template('base_lijing.html')
+    return render_template('lijing/board.html')
