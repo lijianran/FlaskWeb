@@ -5,6 +5,7 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 
 import os
+import json
 
 def get_db():
     if 'db' not in g:
@@ -81,6 +82,39 @@ def init_lijing_db_command():
     init_lijing_db()
     click.echo('Initialized the lijing database.')
 
+
+
+def create_table(table_list, year):
+    for table in table_list:
+        table_name = table+'_'+year
+        
+        sql_data = {}
+        with open('flaskr\\lijing_table.json', 'r') as f:
+            sql_data = json.load(f)
+
+        item_list = []
+
+        for item in sql_data[table]:
+            for item_name in item:
+                if item_name == 'foreign_key':
+                    foreign_key_list = item['foreign_key']
+
+                    item_list.append(
+                        'FOREIGN KEY('+foreign_key_list[0]+') REFERENCES '+foreign_key_list[1]+'_'+year+'('+foreign_key_list[2]+')')
+
+                elif item_name == 'primary_key':
+                    item_list.append('PRIMARY KEY'+str(item[item_name]))
+                else:
+                    item_list.append(str(item_name)+' '+str(item[item_name]))
+        
+        
+        item_string = ', '.join(item_list)
+
+        sql_create = 'CREATE TABLE '+table_name+'('+item_string+')'
+        
+        db = get_lijing_db()
+        db.execute(sql_create)
+        db.commit()
 
 
 
