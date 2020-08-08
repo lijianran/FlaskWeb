@@ -39,9 +39,9 @@
 
 
 
-  <body>
+  <body>    <!--导航栏-->
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Company name</a>
+  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">大集中学教务管理</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -92,7 +92,7 @@
             <div class="collapse" id="demo">
               <ul class="nav flex-column mb-2">
                 <li class="nav-item">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{{ url_for('lijing_basicinfo.hello') }}">
                     &nbsp;&nbsp;<span data-feather="file-text"></span>
                     教师基本信息
                   </a>
@@ -147,11 +147,11 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
       <div class="row">
 
-        <div class="col-lg-1"></div>
+        <div class="col-lg-2"></div>
         <div class="col-lg-8">
-
+          
           <section class="content">
-
+            
             {% for message in get_flashed_messages() %}
             <div class="alert alert-warning flash">{{ message }}</div>
             {% endfor %}
@@ -160,7 +160,7 @@
           </section>
 
         </div>
-        <div class="col-lg-3"></div>
+        <div class="col-lg-2"></div>
       </div>
 
       
