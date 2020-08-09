@@ -83,21 +83,24 @@ def init_lijing_db_command():
     click.echo('Initialized the lijing database.')
 
 
-
+#新增创建表格函数，第一个参数是一个列表，第二个参数是年份
 def create_table(table_list, year):
+    # create_table(['person', 'education', 'workinfo', 'skill'], year_select)
+    #table就是代指person，education等
+
     for table in table_list:
         table_name = table+'_'+year
         
         sql_data = {}
         with open('flaskr\\lijing_table.json', 'r') as f:
             sql_data = json.load(f)
-
+            
         item_list = []
-
+        #item又是指的person_id,person_name,gender等
         for item in sql_data[table]:
-            for item_name in item:
+            for item_name in item:      #item_name又是指的主键，外键等附加的
                 if item_name == 'foreign_key':
-                    foreign_key_list = item['foreign_key']
+                    foreign_key_list = item['foreign_key']   #如果是外键，那么首先放入以字典为元素的列表中，字典的索引为外键
 
                     item_list.append(
                         'FOREIGN KEY('+foreign_key_list[0]+') REFERENCES '+foreign_key_list[1]+'_'+year+'('+foreign_key_list[2]+')')
@@ -118,3 +121,83 @@ def create_table(table_list, year):
 
 
 
+def insert_table(table, year, insert_item, insert_dict):
+    table_name = table+'_'+year
+
+    item_data = []
+
+    for item in insert_item:
+        item_data.append('\''+insert_dict[item]+'\'')
+    
+    sql_insert = 'INSERT INTO '+table_name + '('+', '.join(insert_item)+') VALUES ('+', '.join(item_data)+')'
+
+    db = get_lijing_db()
+    db.execute(sql_insert)
+    db.commit()
+
+
+def select_table(table, year, select_item, condition_dict=None):
+    if type(table) == str:
+        #### 单表查询
+        table_name = table+'_'+year
+
+        select_string_list = []
+        for item in select_item:
+            select_table_name = select_item[item]+'_'+year
+            select_string_list.append(select_table_name+'.'+item)
+
+        select_string = ', '.join(select_string_list)
+
+        if condition_dict != None:
+            condition_data = []
+            for item in condition_dict:
+                condition_data.append(item + ' = \'' + condition_dict[item] + '\'')
+
+            sql_select = 'SELECT '+select_string+' FROM ' + table_name+' WHERE '+' AND '.join(condition_data)
+        else:
+            sql_select = 'SELECT '+select_string+' FROM ' + table_name
+        
+        
+        db = get_lijing_db()
+        results = db.execute(sql_select).fetchall()
+
+        result_list = []
+        for result in results:
+            result_dict = {}
+            for item in select_item:
+                result_dict[item] = result[item]
+
+            result_list.append(result_dict)
+
+        if len(result_list) == 1:
+            return result_list[0]
+        else:
+            return result_list
+
+
+
+def get_item_list(table):
+    item_list = []
+
+    item_list_dict = {
+        'person': ['person_name', 'gender', 'id_number', 'phone', 'political_status', 'time_Party', 'time_work', 'address', 'resume'],
+        'education': ['edu_start', 'time_edu_start', 'school_edu_start', 'major_edu_start', 'edu_end', 'time_edu_end', 'school_edu_end', 'major_edu_end'],
+        'skill': ['skill_title', 'time_skill', 'skill_unit', 'skill_number'],
+        'workinfo': ['time_school', 'work_kind', 'job_post', 'time_retire']
+    }
+    if type(table) == list:
+        for table_name in table:
+            if table_name in item_list_dict:
+                item_list = item_list + list(item_list_dict[table_name])
+    elif type(table) == str:
+        item_list = item_list_dict[table]
+    else:
+        pass
+
+    return item_list
+
+
+def float_int_string(float_num):
+    if type(float_num) != str:
+        float_num = str(int(float_num))
+    return float_num
