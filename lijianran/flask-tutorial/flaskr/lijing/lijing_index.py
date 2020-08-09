@@ -18,3 +18,5 @@ def index():
 @login_required
 def board():
     return render_template('lijing/board.html')
+
+
