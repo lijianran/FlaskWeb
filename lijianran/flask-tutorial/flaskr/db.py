@@ -113,9 +113,96 @@ def create_table(table_list, year):
         item_string = ', '.join(item_list)
 
         sql_create = 'CREATE TABLE '+table_name+'('+item_string+')'
-        
+
         db = get_lijing_db()
         db.execute(sql_create)
         db.commit()
 
+
+
+# insert_table('person', '2023', ['person_id','person_name'], {'person_id':'1','person_name':'lijianran'})
+
+def insert_table(table, year, insert_item, insert_dict):
+    table_name = table+'_'+year
+
+    item_data = []
+
+    for item in insert_item:
+        item_data.append('\''+insert_dict[item]+'\'')
+    
+    sql_insert = 'INSERT INTO '+table_name + '('+', '.join(insert_item)+') VALUES ('+', '.join(item_data)+')'
+
+    db = get_lijing_db()
+    db.execute(sql_insert)
+    db.commit()
+
+# select_table(['person', 'education', 'skill', 'workinfo'], '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男'})
+# select_table('person', '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男'})
+# select person_2023.person_id, person_2023.person_name from person_2023 where gender = '男'
+# where gender = '男'
+def select_table(table, year, select_item, condition_dict=None):
+    if type(table) == str:
+        #### 单表查询
+        table_name = table+'_'+year
+
+        select_string_list = []
+        for item in select_item:
+            select_table_name = select_item[item]+'_'+year
+            select_string_list.append(select_table_name+'.'+item)
+
+        select_string = ', '.join(select_string_list)
+
+        if condition_dict != None:
+            condition_data = []
+            for item in condition_dict:
+                condition_data.append(item + ' = \'' + condition_dict[item] + '\'')
+
+            sql_select = 'SELECT '+select_string+' FROM ' + table_name+' WHERE '+' AND '.join(condition_data)
+        else:
+            sql_select = 'SELECT '+select_string+' FROM ' + table_name
         
+        
+        db = get_lijing_db()
+        results = db.execute(sql_select).fetchall()
+
+        result_list = []
+        for result in results:
+            result_dict = {}
+            for item in select_item:
+                result_dict[item] = result[item]
+
+            result_list.append(result_dict)
+
+        if len(result_list) == 1:
+            return result_list[0]
+        else:
+            return result_list
+
+
+
+def get_item_list(table):
+    item_list = []
+
+    item_list_dict = {
+        'person': ['person_name', 'gender', 'id_number', 'phone', 'political_status', 'time_Party', 'time_work', 'address', 'resume'],
+        'education': ['edu_start', 'time_edu_start', 'school_edu_start', 'major_edu_start', 'edu_end', 'time_edu_end', 'school_edu_end', 'major_edu_end'],
+        'skill': ['skill_title', 'time_skill', 'skill_unit', 'skill_number'],
+        'workinfo': ['time_school', 'work_kind', 'job_post', 'time_retire']
+    }
+    if type(table) == list:
+        for table_name in table:
+            if table_name in item_list_dict:
+                item_list = item_list + list(item_list_dict[table_name])
+    elif type(table) == str:
+        item_list = item_list_dict[table]
+    else:
+        pass
+
+    return item_list
+
+
+
+def float_int_string(float_num):
+    if type(float_num) != str:
+        float_num = str(int(float_num))
+    return float_num
