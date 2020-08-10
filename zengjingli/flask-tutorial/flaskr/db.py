@@ -151,7 +151,7 @@ def select_table(table, year, select_item, condition_dict=None):
         if condition_dict != None:
             condition_data = []
             for item in condition_dict:
-                condition_data.append(item + ' = \'' + condition_dict[item] + '\'')
+                condition_data.append(item + condition_dict[item])
 
             sql_select = 'SELECT '+select_string+' FROM ' + table_name+' WHERE '+' AND '.join(condition_data)
         else:
@@ -173,7 +173,64 @@ def select_table(table, year, select_item, condition_dict=None):
             return result_list[0]
         else:
             return result_list
+    else:
+        #### 多表查询
+        select_string_list = []
+        for item in select_item:
+            select_table_name = select_item[item]+'_'+year
+            select_string_list.append(select_table_name+'.'+item)
 
+        select_string = ', '.join(select_string_list)
+
+        sql_data = {}
+        with open('flaskr\\lijing_table.json', 'r') as f:
+            sql_data = json.load(f)
+
+        # print(table)
+
+        join_list = []
+        for table_name in table:
+            flag = False
+            for item in sql_data[table_name]:
+                
+                if 'foreign_key' in item:
+                    table1 = table_name+'_'+year
+                    key1 = item['foreign_key'][0]
+                    table2 = item['foreign_key'][1] + '_'+year
+                    key2 = item['foreign_key'][2]
+                    join_string = 'JOIN '+table1+' ON '+table1+'.'+key1+' = '+table2+'.'+key2
+
+                    flag = True
+                    join_list.append(join_string)
+            
+            if not flag:
+                join_list.insert(0, table_name+'_'+year)
+
+        if condition_dict != None:
+            condition_data = []
+            for item in condition_dict:
+                condition_data.append(item + condition_dict[item])
+
+            sql_select = 'SELECT '+select_string+' FROM ' + ' '.join(join_list)+' WHERE '+' AND '.join(condition_data)
+        else:
+            sql_select = 'SELECT '+select_string+' FROM ' + ' '.join(join_list)
+
+        print(sql_select)
+        db = get_lijing_db()
+        results = db.execute(sql_select).fetchall()
+
+        result_list = []
+        for result in results:
+            result_dict = {}
+            for item in select_item:
+                result_dict[item] = result[item]
+
+            result_list.append(result_dict)
+
+        if len(result_list) == 1:
+            return result_list[0]
+        else:
+            return result_list
 
 
 def get_item_list(table):

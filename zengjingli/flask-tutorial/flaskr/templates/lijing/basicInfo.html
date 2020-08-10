@@ -95,7 +95,9 @@
     <p class="lead">...</p>
 </div>
 
-
+<div id="success_info" class="alert alert-success alert-dismissible" style="display: none;">
+  <strong id="success_msg"></strong>
+</div>
 
 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" id="toolbar">
     <div class="dropdown mr-2">
@@ -117,6 +119,153 @@
 
 
 <table id="table" class="table-striped" data-sortable="true"></table>
+
+
+
+<div class="modal fade" id="detailModal">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+          <!-- 模态框头部 -->
+          <div class="modal-header">
+              <h4 class="modal-title" id="detail_modal_title">基本信息</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- 模态框主体 -->
+          <div class="modal-body">
+              <form>
+                  <div class="form-row">
+                      <div class="form-group col-md-3">
+                          <label for="person_name">姓名*</label>
+                          <input type="text" class="form-control" id="person_name" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="gender">性别</label>
+                          <input type="text" class="form-control" id="gender" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <label for="id_number">身份证号*</label>
+                          <input type="text" class="form-control" id="id_number" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-3">
+                          <label for="time_work">参加工作时间</label>
+                          <input type="text" class="form-control" id="time_work" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <label for="phone">联系电话</label>
+                          <input type="text" class="form-control" id="phone" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-2">
+                          <label for="political_status">政治面貌</label>
+                          <input type="text" class="form-control" id="political_status" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_Party">入党时间</label>
+                          <input type="text" class="form-control" id="time_Party" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <div class="form-row">
+                      <div class="form-group col-md-2">
+                          <label for="edu_start">第一学历</label>
+                          <input type="text" class="form-control" id="edu_start" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_edu_start">毕业时间</label>
+                          <input type="text" class="form-control" id="time_edu_start" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <label for="school_edu_start">毕业学校</label>
+                          <input type="text" class="form-control" id="school_edu_start" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="major_edu_start">专业</label>
+                          <input type="text" class="form-control" id="major_edu_start" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <div class="form-row">
+                      <div class="form-group col-md-2">
+                          <label for="edu_end">最高学历</label>
+                          <input type="text" class="form-control" id="edu_end" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_edu_end">毕业时间</label>
+                          <input type="text" class="form-control" id="time_edu_end" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <label for="school_edu_end">毕业学校</label>
+                          <input type="text" class="form-control" id="school_edu_end" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="major_edu_end">专业</label>
+                          <input type="text" class="form-control" id="major_edu_end" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <div class="form-row">
+                      <div class="form-group col-md-2">
+                          <label for="skill_title">专业技术职称</label>
+                          <input type="text" class="form-control" id="skill_title" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_skill">取得时间</label>
+                          <input type="text" class="form-control" id="time_skill" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <label for="skill_unit">发证单位</label>
+                          <input type="text" class="form-control" id="skill_unit" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="skill_number">发证文件批号</label>
+                          <input type="text" class="form-control" id="skill_number" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-3">
+                          <label for="work_kind">用工性质</label>
+                          <input type="text" class="form-control" id="work_kind" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="job_post">工作岗位</label>
+                          <input type="text" class="form-control" id="job_post" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_school">调入大集中学时间</label>
+                          <input type="text" class="form-control" id="time_school" placeholder="" readonly>
+                      </div>
+                      <div class="form-group col-md-3">
+                          <label for="time_retire">退休时间</label>
+                          <input type="text" class="form-control" id="time_retire" placeholder="" readonly>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="address">住址</label>
+                      <input type="text" class="form-control" id="address" placeholder="" readonly>
+                  </div>
+                  <div class="form-group">
+                      <label for="resume">工作简历</label>
+                      <textarea class="form-control" id="resume" rows="3" readonly></textarea>
+                  </div>
+              </form>
+          </div>
+
+          <!-- 模态框底部 -->
+          <div class="modal-footer">
+
+              <button type="button" id="button_add" class="btn btn-primary" style="display: none;"
+                  onclick="add_data()">添加</button>
+              <button type="button" id="button_update" class="btn btn-primary" style="display: none;"
+                  onclick="update_data()">修改</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          </div>
+
+      </div>
+  </div>
+</div>
 
 
 <div class="modal fade" id="importModal">
@@ -176,6 +325,9 @@
 
 {% block files %}
 
+<script type=text/javascript> $SCRIPT_ROOT={{ request.script_root|tojson|safe }}; </script>
+
+
 <script>
 
     function operateFormatter(value, row, index) {
@@ -193,7 +345,26 @@
     }
 
     window.operateEvents = {
-        'click .detail': function (e, value, row, index) {
+   'click .detail': function (e, value, row, index) {
+          document.getElementById("detail_modal_title").innerHTML = row.person_name + "--基本信息";
+
+
+    $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/search', { id: row.person_id }, function (datas) {
+        var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
+          "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
+          "skill_title", "time_skill", "skill_unit", "skill_number",
+          "time_school", "work_kind", "job_post", "time_retire"];
+
+    for (var i = 0; i < item.length; i++) {
+          document.getElementById(item[i]).value = datas[item[i]];
+        }
+
+      });
+      document.getElementById("button_add").style.display = "none";
+      document.getElementById("button_update").style.display = "none";
+      $("#detailModal input").attr("readOnly", true);
+      $("#resume").attr("readOnly", true);
+      $('#detailModal').modal('show');
 
 
         },
@@ -267,8 +438,65 @@
     init_table();
 
     function show_import_modal() {
+
         $('#importModal').modal('show');
     };
+
+
+    function show_add_modal() {
+      var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
+      "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
+      "skill_title", "time_skill", "skill_unit", "skill_number",
+      "time_school", "work_kind", "job_post", "time_retire"];
+
+    for (var i = 0; i < item.length; i++) {
+      document.getElementById(item[i]).value = "";
+    }
+
+    $("#detailModal input").attr("readOnly", false);
+    $("#resume").attr("readOnly", false);
+
+
+    document.getElementById("button_add").style.display = "block";
+
+    document.getElementById("detail_modal_title").innerHTML = "新增教师基本信息";
+
+
+
+      $("#detailModal").modal("show");
+    };
+
+
+    function add_data() {
+    if (document.getElementById("person_name").value == "") {
+      window.alert("姓名为必填项！");
+      return;
+    }
+    if (document.getElementById("id_number").value == "") {
+      window.alert("身份证为必填项！");
+      return;
+    }
+
+    var datas = {};
+    var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
+      "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
+      "skill_title", "time_skill", "skill_unit", "skill_number",
+      "time_school", "work_kind", "job_post", "time_retire"];
+
+    for (var i = 0; i < item.length; i++) {
+      datas[item[i]] = document.getElementById(item[i]).value;
+    }
+
+    $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/add_data', datas, function (return_data) {
+      document.getElementById("success_info").style.display = "block";
+      document.getElementById("success_msg").innerHTML = return_data['msg'];
+
+      $("#detailModal").modal("hide");
+    });
+
+
+  };
+
 
 
     function showFilename(file) {
