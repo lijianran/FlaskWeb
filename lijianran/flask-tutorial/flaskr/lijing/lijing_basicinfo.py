@@ -163,6 +163,54 @@ def importData():
             return redirect(url_for('lijing_basicinfo.hello'))
 
 
+@bp.route('/add_data', methods=('GET', 'POST'))
+def add_data():
+    insert_dict = {}
+
+    item = get_item_list(['person', 'education', 'skill', 'workinfo'])
+
+    year_select = session['year_current']
+
+    for i in item:
+        insert_dict[i] = request.args.get(i, '暂无', type=str)
+        if insert_dict[i] == '':
+            insert_dict[i] = '暂无'
+
+    item_person = get_item_list('person')
+    insert_table('person', year_select, item_person, insert_dict)
+
+    person_id = select_table('person', year_select, {'person_id': 'person'}, {'person_name': insert_dict['person_name']})['person_id']
+    insert_dict['person_id'] = float_int_string(person_id)
+
+    item_education = get_item_list('education')
+    item_education.append('person_id')
+    insert_table('education', year_select, item_education, insert_dict)
+
+    item_skill = get_item_list('skill')
+    item_skill.append('person_id')
+    insert_table('skill', year_select, item_skill, insert_dict)
+
+    item_workinfo = get_item_list('workinfo')
+    item_workinfo.append('person_id')
+    insert_table('workinfo', year_select, item_workinfo, insert_dict)
+
+    msg = '成功添加教师' + insert_dict['person_name'] + '的信息'
+    return jsonify({'msg': msg})
 
 
-        
+@bp.route('/search', methods=('GET', 'POST'))
+def search():
+    person_id = request.args.get('id', 0, type=int)
+    year = session['year_current']
+
+    item = {}
+    table = ['person', 'education', 'skill', 'workinfo']
+    for table_name in table:
+        item_list = get_item_list(table_name)
+        for i in item_list:
+            item[i] = table_name
+
+    condition = 'person_' + year + '.person_id'
+    result = select_table(table, year, item, {condition: '=\''+float_int_string(person_id)+'\''})
+
+    return jsonify(result)
