@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from flaskr.auth import login_required
 
-from flaskr.db import get_db, get_lijing_db,create_table,insert_table,select_table,get_item_list,float_int_string
+from flaskr.db import get_db, get_lijing_db,create_table,insert_table,select_table,get_item_list,float_int_string,update_table
 
 import datetime
 
@@ -174,16 +174,16 @@ def importData():
 def add_data():
     insert_dict = {}
 
-    item = get_item_list(['person', 'education', 'skill', 'workinfo'])
+    item = get_item_list(['person', 'education', 'skill', 'workinfo'])  #返回的是所有25个字段
 
-    year_select = session['year_current']
+    year_select = session['year_current']   #当前年份
 
-    for i in item:
+    for i in item:        #就是一个一个增加，如果没有增加，就先设置成暂无
         insert_dict[i] = request.args.get(i, '暂无', type=str)
         if insert_dict[i] == '':
             insert_dict[i] = '暂无'
 
-    item_person = get_item_list('person')
+    item_person = get_item_list('person')        
     insert_table('person', year_select, item_person, insert_dict)
 
     person_id = select_table('person', year_select, {'person_id': 'person'}, {'person_name': insert_dict['person_name']})['person_id']
@@ -222,3 +222,34 @@ def search():
     result = select_table(table, year, item, {condition: '=\''+float_int_string(person_id)+'\''})
 
     return jsonify(result)
+
+@bp.route('/update_data', methods=('GET', 'POST'))
+def update_data():
+    year_select = session['year_current']
+
+    update_dict = {}
+    item = get_item_list(['person', 'education', 'skill', 'workinfo'])
+    for i in item:
+        update_dict[i] = request.args.get(i, '暂无', type=str)
+        if update_dict[i] == '':
+            update_dict[i] = '暂无'
+
+    person_id = request.args.get('person_id', '0', type=str)
+    condition_dict = {'person_id': ' = \''+person_id+'\''}
+
+
+    item_person = get_item_list('person')
+    update_table('person', year_select, item_person, update_dict, condition_dict)
+
+    item_education = get_item_list('education')
+    update_table('education', year_select, item_education, update_dict, condition_dict)
+
+    item_skill = get_item_list('skill')
+    update_table('skill', year_select, item_skill, update_dict, condition_dict)
+
+    item_workinfo = get_item_list('workinfo')
+    update_table('workinfo', year_select, item_workinfo, update_dict, condition_dict)
+
+
+    msg = '成功修改教师' + update_dict['person_name'] + '的信息'
+    return jsonify({'msg': msg})

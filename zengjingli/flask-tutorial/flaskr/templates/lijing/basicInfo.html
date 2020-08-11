@@ -99,6 +99,32 @@
   <strong id="success_msg"></strong>
 </div>
 
+ <!--搜索框-->
+<div class="row" id="search_bar">
+  <div class="input-group mb-3 col-md-4">
+      <div class="input-group-prepend">
+          <label class="input-group-text" for="select_year">年份</label>
+      </div>
+      <select class="custom-select" id="select_year">
+          {% for year in year_list %}
+          <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+      </select>
+  </div>
+  <div class="input-group mb-3 col-md-8">
+      <div class="input-group-prepend">
+          <select class="custom-select" id="search_select">
+          </select>
+      </div>
+      <input type="text" class="form-control" aria-label="Text input with dropdown button" id="search_string">
+      <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" onclick="search_data()">搜索</button>
+      </div>
+  </div>
+</div>
+
+
+<!--添加，导入，导出部分-->
 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" id="toolbar">
     <div class="dropdown mr-2">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
@@ -121,7 +147,7 @@
 <table id="table" class="table-striped" data-sortable="true"></table>
 
 
-
+<!--弹出25项-->
 <div class="modal fade" id="detailModal">
   <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -267,7 +293,7 @@
   </div>
 </div>
 
-
+<!--点导入功能时出现的框-->
 <div class="modal fade" id="importModal">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -329,6 +355,23 @@
 
 
 <script>
+    var update_person_id = 0;
+    function init() {
+    var select_search = document.getElementById("search_select");
+    var item = {
+      "姓名": "person_name", "性别": "gender", "身份证号": "id_number", "联系电话": "phone", "政治面貌": "political_status", "入党时间": "time_Party", "参加工作时间": "time_work", "家庭住址": "address", "个人简历": "resume",
+      "第一学历": "edu_start", "第一学历毕业时间": "time_edu_start", "第一学历毕业学校": "school_edu_start", "第一学历专业": "major_edu_start", "最高学历": "edu_end", "最高学历毕业时间": "time_edu_end", "最高学历毕业学校": "school_edu_end", "最高学历专业": "major_edu_end",
+      "专业技术职称": "skill_title", "职称取得时间": "time_skill", "职称发证单位": "skill_unit", "发证文件批号": "skill_number",
+      "调入大集中学时间": "time_school", "用工性质": "work_kind", "工作岗位": "job_post", "退休时间": "time_retire"
+    };
+
+    for (var i in item)
+      select_search.options.add(new Option(i, item[i]));
+
+  }
+  init();
+
+
 
     function operateFormatter(value, row, index) {
         return [
@@ -344,12 +387,13 @@
         ].join('')
     }
 
+
     window.operateEvents = {
    'click .detail': function (e, value, row, index) {
           document.getElementById("detail_modal_title").innerHTML = row.person_name + "--基本信息";
 
 
-    $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/search', { id: row.person_id }, function (datas) {
+        $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/search', { id: row.person_id }, function (datas) {
         var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
           "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
           "skill_title", "time_skill", "skill_unit", "skill_number",
@@ -368,16 +412,40 @@
 
 
         },
-        'click .update': function (e, value, row, index) {
+   'click .update': function (e, value, row, index) {
+    update_person_id = row.person_id;
 
+              document.getElementById("detail_modal_title").innerHTML = '修改教师"' + row.person_name + '"的基本信息';
+
+              $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/search', { id: row.person_id }, function (datas) {
+                var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
+                  "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
+                  "skill_title", "time_skill", "skill_unit", "skill_number",
+                  "time_school", "work_kind", "job_post", "time_retire"];
+                for (var i = 0; i < item.length; i++) {
+                  document.getElementById(item[i]).value = datas[item[i]];
+                }
+              });
+
+              document.getElementById("button_add").style.display = "none";
+              document.getElementById("button_update").style.display = "block";
+              $("#detailModal input").attr("readOnly", false);
+              $("#resume").attr("readOnly", false);
+              $('#detailModal').modal('show');
+
+              },
+              'click .remove': function (e, value, row, index) {
+              window.alert("待开发");
+              //$table.bootstrapTable('remove', {field: 'id',values: [row.person_id]})
+              },
 
             //window.alert('You click like action, row: ' + JSON.stringify(row))
-        },
         'click .remove': function (e, value, row, index) {
             window.alert("待开发");
             //$table.bootstrapTable('remove', {field: 'id',values: [row.person_id]})
         }
     }
+    
 
     function init_table() {
         $('#table').bootstrapTable({
@@ -497,7 +565,35 @@
 
   };
 
+    function update_data() {
+    if (document.getElementById("person_name").value == "") {
+      window.alert("姓名为必填项！");
+      return;
+    }
+    if (document.getElementById("id_number").value == "") {
+      window.alert("身份证为必填项！");
+      return;
+    }
 
+    var datas = {};
+    var item = ["person_name", "gender", "id_number", "phone", "political_status", "time_Party", "time_work", "address", "resume",
+      "edu_start", "time_edu_start", "school_edu_start", "major_edu_start", "edu_end", "time_edu_end", "school_edu_end", "major_edu_end",
+      "skill_title", "time_skill", "skill_unit", "skill_number",
+      "time_school", "work_kind", "job_post", "time_retire"];
+
+    datas["person_id"] = update_person_id;
+    for (var i = 0; i < item.length; i++) {
+      datas[item[i]] = document.getElementById(item[i]).value;
+    }
+
+    $.getJSON($SCRIPT_ROOT + '/lijing_basicinfo/update_data', datas, function (return_data) {
+      document.getElementById("success_info").style.display = "block";
+      document.getElementById("success_msg").innerHTML = return_data['msg'];
+      $("#detailModal").modal("hide");
+      $("#table").bootstrapTable('refresh');
+    });
+
+  };
 
     function showFilename(file) {
         $("#filename_label").html(file.name);
