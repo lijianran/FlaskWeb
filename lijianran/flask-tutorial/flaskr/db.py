@@ -136,6 +136,27 @@ def insert_table(table, year, insert_item, insert_dict):
     db.execute(sql_insert)
     db.commit()
 
+
+# update_table('person', year_select, item_person, update_dict, {'person_id': '='1''})
+# update person_2020 set person_name = 'fsdfsldaj', gender = ? where person_id = ?'
+def update_table(table, year, update_item, update_dict, condition_dict):
+    table_name = table+'_'+year
+
+    item_data = []
+    for item in update_item:
+        item_data.append(str(item)+' = \''+str(update_dict[item])+'\'')
+
+    condition_data = []
+    for item in condition_dict:
+        condition_data.append(item + condition_dict[item])
+
+    sql_update = 'UPDATE '+table_name+' SET '+', '.join(item_data)+' WHERE '+' AND '.join(condition_data)
+    
+    db = get_lijing_db()
+    db.execute(sql_update)
+    db.commit()
+
+
 # select_table(['person', 'education', 'skill', 'workinfo'], '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男'})
 # select_table('person', '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男'})
 # select person_2023.person_id, person_2023.person_name from person_2023 where gender = '男'
@@ -235,6 +256,7 @@ def select_table(table, year, select_item, condition_dict=None):
             return result_list[0]
         else:
             return result_list
+
 
 
 

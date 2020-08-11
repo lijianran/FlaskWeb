@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "lijianran\\flask-tutorial\\venv\\Scripts\\python.exe"
+    "python.pythonPath": "lijianran\\flask-tutorial\\venv\\Scripts\\python.exe",
+    "python.formatting.provider": "black"
 }

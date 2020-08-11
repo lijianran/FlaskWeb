@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from flaskr.auth import login_required
 
-from flaskr.db import get_db, get_lijing_db, create_table, insert_table, select_table, get_item_list, float_int_string
+from flaskr.db import get_db, get_lijing_db, create_table, insert_table, select_table, get_item_list, float_int_string, update_table
 
 import datetime
 import xlrd
@@ -21,6 +21,7 @@ bp = Blueprint('lijing_basicinfo', __name__, url_prefix='/lijing_basicinfo')
 def hello():
     # insert_table('person', '2023', ['person_id','person_name'], {'person_id':'1','person_name':'lijianran'})
     # select_table('person', '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男', 'resume': '暂无'})
+    # update_table('person', '2020', ['person_name', 'gender'], {'person_name':'lijianran', 'gender':'男'},{'person_id': '=\''+person_id+\''})
 
     db = get_lijing_db()
 
@@ -214,3 +215,58 @@ def search():
     result = select_table(table, year, item, {condition: '=\''+float_int_string(person_id)+'\''})
 
     return jsonify(result)
+
+
+@bp.route('/update_data', methods=('GET', 'POST'))
+def update_data():
+    year_select = session['year_current']
+
+    update_dict = {}
+    item = get_item_list(['person', 'education', 'skill', 'workinfo'])
+    for i in item:
+        update_dict[i] = request.args.get(i, '暂无', type=str)
+        if update_dict[i] == '':
+            update_dict[i] = '暂无'
+
+    person_id = request.args.get('person_id', '0', type=str)
+    condition_dict = {'person_id': ' = \''+person_id+'\''}
+
+
+    item_person = get_item_list('person')
+    update_table('person', year_select, item_person, update_dict, condition_dict)
+
+    item_education = get_item_list('education')
+    update_table('education', year_select, item_education, update_dict, condition_dict)
+
+    item_skill = get_item_list('skill')
+    update_table('skill', year_select, item_skill, update_dict, condition_dict)
+
+    item_workinfo = get_item_list('workinfo')
+    update_table('workinfo', year_select, item_workinfo, update_dict, condition_dict)
+
+
+    msg = '成功修改教师' + update_dict['person_name'] + '的信息'
+    return jsonify({'msg': msg})
+
+
+@bp.route('/search_data', methods=('GET', 'POST'))
+def search_data():
+    search_item = request.args.get('search_item', '暂无', type=str)
+    search_string = request.args.get('search_string', '暂无', type=str)
+
+    year = session['year_current']
+
+    result = select_table(['person', 'education', 'skill', 'workinfo'], year, {
+        'person_id':'person', 'person_name':'person','gender':'person'}, {search_item: ' like \'%'+search_string+'%\''})
+
+    data = []
+    if type(result) == dict:
+        data.append(result)
+    else:
+        data = result
+
+    msg = '成功查询到'+str(len(data))+'条信息'
+    return jsonify({'msg': msg, 'total': len(data), 'rows': data})
+
+
+    
