@@ -130,7 +130,7 @@ def insert_table(table, year, insert_item, insert_dict):
         item_data.append('\''+insert_dict[item]+'\'')
     
     sql_insert = 'INSERT INTO '+table_name + '('+', '.join(insert_item)+') VALUES ('+', '.join(item_data)+')'
-
+    #print(sql_insert)
     db = get_lijing_db()
     db.execute(sql_insert)
     db.commit()
@@ -231,6 +231,23 @@ def select_table(table, year, select_item, condition_dict=None):
             return result_list[0]
         else:
             return result_list
+#update 表名 set 列名1 = 值1，列名2 = 值2，。。。[where 条件】
+def update_table(table, year, update_item, update_dict, condition_dict):
+    table_name = table+'_'+year
+
+    item_data = []
+    for item in update_item:
+        item_data.append(str(item)+' = \''+str(update_dict[item])+'\'')
+
+    condition_data = []
+    for item in condition_dict:
+        condition_data.append(item + condition_dict[item])
+
+    sql_update = 'UPDATE '+table_name+' SET '+', '.join(item_data)+' WHERE '+' AND '.join(condition_data)
+    
+    db = get_lijing_db()
+    db.execute(sql_update)
+    db.commit()
 
 
 def get_item_list(table):
@@ -242,8 +259,8 @@ def get_item_list(table):
         'skill': ['skill_title', 'time_skill', 'skill_unit', 'skill_number'],
         'workinfo': ['time_school', 'work_kind', 'job_post', 'time_retire']
     }
-    if type(table) == list:
-        for table_name in table:
+    if type(table) == list:      #table就相当于['person','education','skill',workinfo']
+        for table_name in table:         
             if table_name in item_list_dict:
                 item_list = item_list + list(item_list_dict[table_name])
     elif type(table) == str:
