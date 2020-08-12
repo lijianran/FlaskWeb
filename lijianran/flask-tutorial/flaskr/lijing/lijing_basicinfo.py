@@ -10,6 +10,7 @@ from flaskr.db import get_db, get_lijing_db, create_table, insert_table, select_
 
 import datetime
 import xlrd
+import xlsxwriter
 from pypinyin import lazy_pinyin
 import os
 
@@ -19,10 +20,6 @@ bp = Blueprint('lijing_basicinfo', __name__, url_prefix='/lijing_basicinfo')
 @bp.route('/hello')
 @login_required
 def hello():
-    # insert_table('person', '2023', ['person_id','person_name'], {'person_id':'1','person_name':'lijianran'})
-    # select_table('person', '2023', {'person_id':'person', 'person_name':'person'}, {'gender':'男', 'resume': '暂无'})
-    # update_table('person', '2020', ['person_name', 'gender'], {'person_name':'lijianran', 'gender':'男'},{'person_id': '=\''+person_id+\''})
-
     db = get_lijing_db()
 
     year_data = db.execute('select year from year_list').fetchall()
@@ -140,7 +137,7 @@ def importData():
                 item_person = get_item_list('person')
                 insert_table('person', year_select, item_person, insert_dict)
 
-                person_id = select_table('person', year_select, {'person_id': 'person'}, {'person_name': insert_dict['person_name']})['person_id']
+                person_id = select_table('person', year_select, {'person_id': 'person'}, {'person_name': ' = \''+insert_dict['person_name']+'\''})['person_id']
                 insert_dict['person_id'] = float_int_string(person_id)
 
                 item_education = get_item_list('education')
@@ -269,4 +266,59 @@ def search_data():
     return jsonify({'msg': msg, 'total': len(data), 'rows': data})
 
 
-    
+@bp.route('/exportData', methods=('GET', 'POST'))
+def exportData():
+
+    export_item = {}
+    table = ['person', 'education', 'skill', 'workinfo']
+    item = get_item_list(table)
+
+    for table_name in table:
+        item_table = get_item_list(table_name)
+        for i in item_table:
+            if request.args.get(i) == 'true':
+                export_item[i] = table_name
+
+
+    year = session['year_current']
+    flag_search = request.args.get('flag_search')
+
+    id_list = []
+    if flag_search == 'true':
+        id_list = request.args.getlist("id_list[]")
+    else:
+        person_data = select_table('person', year, {'person_id': 'person'})
+        for i in person_data:
+            id_list.append(str(i['person_id']))
+
+    table_data = []
+    for i in id_list:
+        result = select_table(table, year, export_item, {'person_'+year+'.person_id': ' = \''+i+'\''})
+        table_data.append(result)
+
+    item_name_dict = {
+        'person_name': '姓名', "gender": '性别', "id_number": '身份证号', "phone": '联系电话', "political_status": '政治面貌', "time_Party": '入党时间', "time_work": '参加工作时间', "address": '家庭住址', "resume": '个人简历',
+        "edu_start": '第一学历', "time_edu_start": '第一学历毕业时间', "school_edu_start": '第一学历毕业学校', "major_edu_start": '第一学历专业', "edu_end": '最高学历', "time_edu_end": '最高学历毕业时间', "school_edu_end": '最高学历毕业学校', "major_edu_end": '最高学历专业',
+        "skill_title": '专业技术职称', "time_skill": '职称取得时间', "skill_unit": '职称发证单位', "skill_number": '发证文件批号',
+        "time_school": '调入大集中学时间', "work_kind": '用工性质', "job_post": '工作岗位', "time_retire": '退休时间'
+    }
+
+    workbook = xlsxwriter.Workbook('flaskr\\static\\downloads\\exportData.xlsx')
+    worksheet = workbook.add_worksheet('Sheet1')
+    col = 0
+    for i in export_item:
+        worksheet.write(0, col, item_name_dict[i])
+        col = col+1
+
+    for i in range(len(id_list)):
+        col = 0
+        for j in export_item:
+            worksheet.write(i+1, col, table_data[i][j])
+            col = col+1
+
+    workbook.close()
+    # # print(os.path.join(os.path.dirname(
+    # #     __file__), 'static', 'downloads', 'exportData.xlsx'))
+    msg = '成功导出'+str(len(id_list))+'条信息'
+
+    return jsonify({'msg': msg, 'filename': 'exportData.xlsx'})
